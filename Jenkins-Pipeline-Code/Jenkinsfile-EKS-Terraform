@@ -1,6 +1,6 @@
 properties([
     parameters([
-        string(defaultValue: 'variables.tfvars', description: 'Tetris-Game', name: 'Tetris-Game'),
+        string(defaultValue: 'variables.tfvars', description: 'Tetris-Game-Description', name: 'Tetris-Game'),
         choice(choices: ['apply', 'destroy'], description: 'Select Terraform action', name: 'Terraform-Action')
     ])
 ])
@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Initializing Terraform') {
             steps {
-                withAWS(credentials: 'aws-key', region: 'eu-central-1') {
+                withAWS(credentials: 'AWSKey', region: 'eu-central-1') {
                 dir('EKS-TF') {
                     script {
                         sh 'terraform init'
@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Validate Terraform Code') {
             steps {
-                withAWS(credentials: 'aws-key', region: 'eu-central-1') {
+                withAWS(credentials: 'AWSKey', region: 'eu-central-1') {
                 dir('EKS-TF') {
                     script {
                         sh 'terraform validate'
@@ -37,10 +37,10 @@ pipeline {
         }
         stage('Terraform Plan') {
             steps {
-                withAWS(credentials: 'aws-key', region: 'eu-central-1') {
+                withAWS(credentials: 'AWSKey', region: 'eu-central-1') {
                 dir('EKS-TF') {
                     script {
-                        sh "terraform plan -var-file=${params.'File-Name'}"
+                        sh "terraform plan -var-file=${params.'Tetris-Game'}"
                     }
                 }
                 }
@@ -48,7 +48,7 @@ pipeline {
         }
         stage('Terraform Action') {
             steps {
-                withAWS(credentials: 'aws-key', region: 'eu-central-1') { 
+                withAWS(credentials: 'AWSKey', region: 'eu-central-1') { 
                 script {
                     echo "${params.'Terraform-Action'}"
                     dir('EKS-TF') {
